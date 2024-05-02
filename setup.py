@@ -2,7 +2,7 @@
 # ref: https://packaging.python.org/tutorials/packaging-projects/
 import os
 import setuptools
-import guitar
+import re
 
 DESCRIPTION = 'PyGuitar generates an easy-to-practice chord book.'
 
@@ -10,10 +10,22 @@ here = os.path.abspath(os.path.dirname(__file__))
 with open(os.path.join(here, 'README.md'), encoding='utf-8') as f:
     LONG_DESCRIPTION = f.read()
 
+with open(os.path.join(here, "guitar/__init__.py"), "r") as file:
+    pattern = re.compile(r'^(\w+)\s*=\s*"([^"]+)"')
+    for line in file.read().splitlines():
+        match = re.match(pattern, line)
+        if match is not None and match[1] == "__version__":
+            version = match[2]
+            break
+    else:
+        raise RuntimeError("couldn't get version!")
+
+print(version)
+
 def setup_package():
     metadata = dict(
         name='PyGuitar',
-        version=guitar.__version__,
+        version=version,
         description=DESCRIPTION,
         long_description=LONG_DESCRIPTION,
         long_description_content_type='text/markdown',
